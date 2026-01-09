@@ -1,0 +1,38 @@
+name: .NET Build and Test
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./Contextual
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+      working-directory: ./Contextual
+      
+    - name: Publish build artifacts
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: contextual-build
+        path: |
+          Contextual/bin/Release/**
+          !Contextual/bin/Release/**/ref/**
+        retention-days: 7
