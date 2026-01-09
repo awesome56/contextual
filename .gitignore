@@ -104,3 +104,8 @@ secrets/
 
 # Package lock files (optional - uncomment if you want to ignore)
 # packages.lock.json
+
+# Large installer files - exclude from repository
+*.msi
+*.exe
+!Contextual/bin/**/*.exe
