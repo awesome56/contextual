@@ -1,6 +1,6 @@
 # Contextual - Student Management System
 
-[![.NET Build](https://github.com/YOUR_USERNAME/Contextual/actions/workflows/build.yml/badge.svg)](https://github.com/YOUR_USERNAME/Contextual/actions/workflows/build.yml)
+[![.NET Build](https://github.com/awesome56/contextual/actions/workflows/build.yml/badge.svg)](https://github.com/awesome56/contextual/actions/workflows/build.yml)
 
 A Windows Forms application for managing student records, courses, and academic results.
 
@@ -33,7 +33,7 @@ A Windows Forms application for managing student records, courses, and academic 
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/YOUR_USERNAME/Contextual.git
+   git clone https://github.com/awesome56/contextual.git
    ```
 
 2. Open the solution in Visual Studio 2022
