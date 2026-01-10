@@ -1,4 +1,4 @@
-﻿using FontAwesome.Sharp;
+using FontAwesome.Sharp;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -697,6 +697,11 @@ namespace Contextual
             dataCourses.Hide();
             dataResult.Hide();
 
+            // Show student bulk upload buttons, hide course bulk upload buttons
+            btnBulkUploadStudents.Show();
+            btnDownloadStudentTemplate.Show();
+            btnBulkUploadCourses.Hide();
+            btnDownloadCourseTemplate.Hide();
 
             LoadProgramDetails(programName);
 
@@ -737,6 +742,12 @@ namespace Contextual
             btnAddStd.Hide();
             dataStd.Hide();
             dataCourses.Show();
+
+            // Show course bulk upload buttons, hide student bulk upload buttons
+            btnBulkUploadCourses.Show();
+            btnDownloadCourseTemplate.Show();
+            btnBulkUploadStudents.Hide();
+            btnDownloadStudentTemplate.Hide();
         }
 
         private void iconButton3_Click(object sender, EventArgs e)
@@ -756,6 +767,12 @@ namespace Contextual
             dataCourses.Hide();
             dataStd.Show();
             btnAddStd.Show();
+
+            // Show student bulk upload buttons, hide course bulk upload buttons
+            btnBulkUploadStudents.Show();
+            btnDownloadStudentTemplate.Show();
+            btnBulkUploadCourses.Hide();
+            btnDownloadCourseTemplate.Hide();
         }
 
         private void btnAddStd_Click(object sender, EventArgs e)
@@ -1587,7 +1604,7 @@ namespace Contextual
                                     // Set column names from Row 3 and ensure uniqueness
                                     for (int i = 0; i < excelTable.Columns.Count; i++)
                                     {
-                                      
+
                                         excelTable.Columns[i].ColumnName = headerRow[i].ToString(); // Assign unique name
                                     }
 
@@ -1704,7 +1721,7 @@ namespace Contextual
         private void buttonupload_Click(object sender, EventArgs e)
         {
             try
-            { 
+            {
                 if (Con.State == System.Data.ConnectionState.Closed)
                 {
                     Con.Open();
@@ -1769,7 +1786,7 @@ namespace Contextual
                 int i = 1;
                 int k = 1;
 
-                
+
                 int matricCol = 0;
                 int totalCol = 0;
                 int headerRow = 0;
@@ -1804,7 +1821,7 @@ namespace Contextual
 
                     int totalColumns = row.ItemArray.Length;
 
-                    for (int j = 0; j < totalColumns; j++) 
+                    for (int j = 0; j < totalColumns; j++)
                     {
                         if (row[j].ToString() == "MATRIC No")
                         {
@@ -1818,8 +1835,8 @@ namespace Contextual
                         }
                     }
 
-                  
-                    if (headerRow != 0 && i > headerRow) 
+
+                    if (headerRow != 0 && i > headerRow)
                     {
                         if (AreAllColumnsEmpty(row))
                         {
@@ -1841,7 +1858,7 @@ namespace Contextual
                             studentLevel = GlobalVariable.Globals.GetStudentLevel(readerStdResult.GetInt32("Id"), Con);
 
                             //  If student level is less than course level
-                            if (studentLevel >= courseLevel) 
+                            if (studentLevel >= courseLevel)
                             {
                                 //MessageBox.Show($"{studentLevel} {courseLevel}");
                                 dataResult.Rows.Add(k, row[matricCol].ToString(), row[totalCol].ToString(), "Success", "Student result uploaded.");
@@ -1855,7 +1872,7 @@ namespace Contextual
                         {
                             dataResult.Rows.Add(k, row[matricCol].ToString(), row[totalCol].ToString(), "Failed", "Student Does not exist in this Department program.");
                         }
-                            k++;
+                        k++;
                     }
 
                     i++;
@@ -1879,5 +1896,120 @@ namespace Contextual
             dataResult.Show();
         }
 
+
+        private void btnBulkUploadStudents_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string filePath = BulkUploadHelper.SelectExcelFile();
+                if (string.IsNullOrEmpty(filePath)) return;
+
+                DataTable data = BulkUploadHelper.ReadExcelFile(filePath);
+                if (data == null || data.Rows.Count == 0)
+                {
+                    MessageBox.Show("No data found in the selected file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                DialogResult confirmResult = MessageBox.Show(
+                    $"Found {data.Rows.Count} rows to process.\n\nDo you want to proceed with the bulk upload?",
+                    "Confirm Bulk Upload", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (confirmResult != DialogResult.Yes) return;
+
+                var uploadHelper = new BulkUploadHelper(Con);
+                var result = uploadHelper.BulkUploadStudents(data, programId);
+
+                string resultMessage = $"Bulk Upload Complete!\n\nSuccessful: {result.SuccessCount}\nSkipped: {result.SkippedCount}\nFailed: {result.FailedCount}";
+
+                if (result.FailedCount > 0)
+                {
+                    resultMessage += "\n\nFailed rows:";
+                    foreach (var row in result.RowResults.Where(r => r.Status == "Failed").Take(10))
+                    {
+                        resultMessage += $"\nRow {row.RowNumber}: {row.Identifier} - {row.Message}";
+                    }
+                    if (result.FailedCount > 10) resultMessage += $"\n... and {result.FailedCount - 10} more";
+                }
+
+                MessageBox.Show(resultMessage, "Bulk Upload Results", MessageBoxButtons.OK,
+                    result.FailedCount > 0 ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
+
+                LoadStdTable();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during bulk upload: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnDownloadStudentTemplate_Click(object sender, EventArgs e)
+        {
+            BulkUploadHelper.DownloadStudentTemplate();
+        }
+
+
+
+
+        private void btnDownloadResultTemplate_Click(object sender, EventArgs e)
+        {
+            BulkUploadHelper.DownloadResultTemplate();
+        }
+
+        private void btnBulkUploadCourses_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string filePath = BulkUploadHelper.SelectExcelFile();
+                if (string.IsNullOrEmpty(filePath)) return;
+
+                DataTable data = BulkUploadHelper.ReadExcelFile(filePath);
+                if (data == null || data.Rows.Count == 0)
+                {
+                    MessageBox.Show("No data found in the selected file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                DialogResult confirmResult = MessageBox.Show(
+                    $"Found {data.Rows.Count} rows to process.\n\nDo you want to proceed with the bulk upload?",
+                    "Confirm Bulk Upload", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (confirmResult != DialogResult.Yes) return;
+
+                var uploadHelper = new BulkUploadHelper(Con);
+                var result = uploadHelper.BulkUploadCourses(data, programId);
+
+                string resultMessage = $"Bulk Upload Complete!\n\nSuccessful: {result.SuccessCount}\nSkipped: {result.SkippedCount}\nFailed: {result.FailedCount}";
+
+                if (result.FailedCount > 0)
+                {
+                    resultMessage += "\n\nFailed rows:";
+                    foreach (var row in result.RowResults.Where(r => r.Status == "Failed").Take(10))
+                    {
+                        resultMessage += $"\nRow {row.RowNumber}: {row.Identifier} - {row.Message}";
+                    }
+                    if (result.FailedCount > 10) resultMessage += $"\n... and {result.FailedCount - 10} more";
+                }
+
+                MessageBox.Show(resultMessage, "Bulk Upload Results", MessageBoxButtons.OK,
+                    result.FailedCount > 0 ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
+
+                LoadCourseTable();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during bulk upload: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnDownloadCourseTemplate_Click(object sender, EventArgs e)
+        {
+            BulkUploadHelper.DownloadCourseTemplate();
+        }
+
+        private void panelupload_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
