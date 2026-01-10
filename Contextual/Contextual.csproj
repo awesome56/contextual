@@ -9,9 +9,9 @@
     <UserSecretsId>120193ac-abf0-4b27-b694-6e152ccbe8a3</UserSecretsId>
     <ApplicationIcon>result_clipboard_check_mark_list_icon_153875 (3).ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-	<Version>3.3.3.0</Version>
-	<AssemblyVersion>3.3.3.0</AssemblyVersion>
-	<FileVersion>3.3.3.0</FileVersion>
+	<Version>4.0.0.0</Version>
+	<AssemblyVersion>4.0.0.0</AssemblyVersion>
+	<FileVersion>4.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +32,7 @@
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.7.0" />
     <PackageReference Include="FontAwesome.Sharp" Version="6.3.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
+    <PackageReference Include="Octokit" Version="9.1.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="Tabulate.NET" Version="1.0.5" />
   </ItemGroup>
