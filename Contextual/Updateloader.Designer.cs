@@ -28,142 +28,333 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
-            plsWait = new Label();
-            label7 = new Label();
-            btnUpdate = new Button();
-            label2 = new Label();
+            pnlMain = new Panel();
+            pnlHeader = new Panel();
+            lblTitle = new Label();
+            btnClose = new Label();
+            pnlContent = new Panel();
+            lblStatus = new Label();
+            pnlVersionInfo = new Panel();
+            lblCurrentVersionLabel = new Label();
             lbcurr = new Label();
+            lblNewVersionLabel = new Label();
             lbnew = new Label();
-            lbheader = new Label();
-            bw_updateChecker = new System.ComponentModel.BackgroundWorker();
+            lblReleaseDate = new Label();
+            pnlProgress = new Panel();
+            progressBar = new ProgressBar();
+            lblProgressText = new Label();
+            pnlButtons = new Panel();
+            btnUpdate = new Button();
+            btnCancel = new Button();
+            lblReleaseNotes = new Label();
+            txtReleaseNotes = new TextBox();
+            pnlMain.SuspendLayout();
+            pnlHeader.SuspendLayout();
+            pnlContent.SuspendLayout();
+            pnlVersionInfo.SuspendLayout();
+            pnlProgress.SuspendLayout();
+            pnlButtons.SuspendLayout();
             SuspendLayout();
             // 
-            // label1
+            // pnlMain
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Constantia", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label1.Location = new Point(40, 131);
-            label1.Name = "label1";
-            label1.Size = new Size(124, 19);
-            label1.TabIndex = 0;
-            label1.Text = "Current Version:";
+            pnlMain.BackColor = Color.White;
+            pnlMain.BorderStyle = BorderStyle.None;
+            pnlMain.Controls.Add(pnlHeader);
+            pnlMain.Controls.Add(pnlContent);
+            pnlMain.Dock = DockStyle.Fill;
+            pnlMain.Location = new Point(0, 0);
+            pnlMain.Name = "pnlMain";
+            pnlMain.Size = new Size(480, 420);
+            pnlMain.TabIndex = 0;
             // 
-            // plsWait
+            // pnlHeader
             // 
-            plsWait.AutoSize = true;
-            plsWait.Font = new Font("Microsoft Sans Serif", 18F, FontStyle.Bold, GraphicsUnit.Point);
-            plsWait.Location = new Point(22, 9);
-            plsWait.Name = "plsWait";
-            plsWait.Size = new Size(148, 29);
-            plsWait.TabIndex = 3;
-            plsWait.Text = "Please wait";
+            pnlHeader.BackColor = Color.FromArgb(99, 71, 153);
+            pnlHeader.Controls.Add(lblTitle);
+            pnlHeader.Controls.Add(btnClose);
+            pnlHeader.Dock = DockStyle.Top;
+            pnlHeader.Location = new Point(0, 0);
+            pnlHeader.Name = "pnlHeader";
+            pnlHeader.Size = new Size(480, 60);
+            pnlHeader.TabIndex = 0;
+            pnlHeader.MouseDown += pnlHeader_MouseDown;
             // 
-            // label7
+            // lblTitle
             // 
-            label7.AutoSize = true;
-            label7.Cursor = Cursors.Hand;
-            label7.ForeColor = Color.FromArgb(116, 86, 174);
-            label7.Location = new Point(341, 9);
-            label7.Name = "label7";
-            label7.Size = new Size(14, 15);
-            label7.TabIndex = 7;
-            label7.Text = "X";
-            label7.Click += label7_Click;
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point);
+            lblTitle.ForeColor = Color.White;
+            lblTitle.Location = new Point(20, 17);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new Size(165, 25);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "Software Update";
             // 
-            // btnUpdate
+            // btnClose
             // 
-            btnUpdate.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnUpdate.BackColor = Color.Transparent;
-            btnUpdate.Cursor = Cursors.Hand;
-            btnUpdate.FlatAppearance.BorderSize = 0;
-            btnUpdate.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point);
-            btnUpdate.ForeColor = Color.DimGray;
-            btnUpdate.Location = new Point(40, 207);
-            btnUpdate.Margin = new Padding(3, 2, 3, 2);
-            btnUpdate.Name = "btnUpdate";
-            btnUpdate.Size = new Size(290, 45);
-            btnUpdate.TabIndex = 27;
-            btnUpdate.Text = "UPDATE";
-            btnUpdate.UseVisualStyleBackColor = false;
-            btnUpdate.Click += btnUpdate_Click;
+            btnClose.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnClose.AutoSize = true;
+            btnClose.Cursor = Cursors.Hand;
+            btnClose.Font = new Font("Segoe UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
+            btnClose.ForeColor = Color.White;
+            btnClose.Location = new Point(445, 12);
+            btnClose.Name = "btnClose";
+            btnClose.Size = new Size(25, 30);
+            btnClose.TabIndex = 1;
+            btnClose.Text = "✕";
+            btnClose.Click += btnClose_Click;
             // 
-            // label2
+            // pnlContent
             // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Constantia", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(40, 167);
-            label2.Name = "label2";
-            label2.Size = new Size(172, 19);
-            label2.TabIndex = 28;
-            label2.Text = "New Version Available:";
+            pnlContent.BackColor = Color.FromArgb(250, 250, 252);
+            pnlContent.Controls.Add(lblStatus);
+            pnlContent.Controls.Add(pnlVersionInfo);
+            pnlContent.Controls.Add(pnlProgress);
+            pnlContent.Controls.Add(lblReleaseNotes);
+            pnlContent.Controls.Add(txtReleaseNotes);
+            pnlContent.Controls.Add(pnlButtons);
+            pnlContent.Dock = DockStyle.Fill;
+            pnlContent.Location = new Point(0, 60);
+            pnlContent.Name = "pnlContent";
+            pnlContent.Padding = new Padding(20);
+            pnlContent.Size = new Size(480, 360);
+            pnlContent.TabIndex = 1;
+            // 
+            // lblStatus
+            // 
+            lblStatus.Dock = DockStyle.Top;
+            lblStatus.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            lblStatus.ForeColor = Color.FromArgb(64, 64, 64);
+            lblStatus.Location = new Point(20, 20);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Padding = new Padding(0, 0, 0, 10);
+            lblStatus.Size = new Size(440, 40);
+            lblStatus.TabIndex = 0;
+            lblStatus.Text = "Checking for updates...";
+            lblStatus.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // pnlVersionInfo
+            // 
+            pnlVersionInfo.BackColor = Color.White;
+            pnlVersionInfo.Controls.Add(lblCurrentVersionLabel);
+            pnlVersionInfo.Controls.Add(lbcurr);
+            pnlVersionInfo.Controls.Add(lblNewVersionLabel);
+            pnlVersionInfo.Controls.Add(lbnew);
+            pnlVersionInfo.Controls.Add(lblReleaseDate);
+            pnlVersionInfo.Location = new Point(20, 65);
+            pnlVersionInfo.Name = "pnlVersionInfo";
+            pnlVersionInfo.Padding = new Padding(15);
+            pnlVersionInfo.Size = new Size(440, 90);
+            pnlVersionInfo.TabIndex = 1;
+            pnlVersionInfo.Visible = false;
+            pnlVersionInfo.Paint += pnlVersionInfo_Paint;
+            // 
+            // lblCurrentVersionLabel
+            // 
+            lblCurrentVersionLabel.AutoSize = true;
+            lblCurrentVersionLabel.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            lblCurrentVersionLabel.ForeColor = Color.Gray;
+            lblCurrentVersionLabel.Location = new Point(15, 15);
+            lblCurrentVersionLabel.Name = "lblCurrentVersionLabel";
+            lblCurrentVersionLabel.Size = new Size(110, 19);
+            lblCurrentVersionLabel.TabIndex = 0;
+            lblCurrentVersionLabel.Text = "Current Version:";
             // 
             // lbcurr
             // 
             lbcurr.AutoSize = true;
-            lbcurr.Font = new Font("Constantia", 12F, FontStyle.Bold, GraphicsUnit.Point);
-            lbcurr.Location = new Point(277, 131);
+            lbcurr.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            lbcurr.ForeColor = Color.FromArgb(64, 64, 64);
+            lbcurr.Location = new Point(130, 15);
             lbcurr.Name = "lbcurr";
-            lbcurr.Size = new Size(57, 19);
-            lbcurr.TabIndex = 29;
+            lbcurr.Size = new Size(51, 19);
+            lbcurr.TabIndex = 1;
             lbcurr.Text = "1.0.0.0";
+            // 
+            // lblNewVersionLabel
+            // 
+            lblNewVersionLabel.AutoSize = true;
+            lblNewVersionLabel.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            lblNewVersionLabel.ForeColor = Color.Gray;
+            lblNewVersionLabel.Location = new Point(15, 40);
+            lblNewVersionLabel.Name = "lblNewVersionLabel";
+            lblNewVersionLabel.Size = new Size(92, 19);
+            lblNewVersionLabel.TabIndex = 2;
+            lblNewVersionLabel.Text = "New Version:";
             // 
             // lbnew
             // 
             lbnew.AutoSize = true;
-            lbnew.Font = new Font("Constantia", 12F, FontStyle.Bold, GraphicsUnit.Point);
-            lbnew.Location = new Point(277, 167);
+            lbnew.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            lbnew.ForeColor = Color.FromArgb(99, 71, 153);
+            lbnew.Location = new Point(130, 40);
             lbnew.Name = "lbnew";
-            lbnew.Size = new Size(57, 19);
-            lbnew.TabIndex = 30;
+            lbnew.Size = new Size(51, 19);
+            lbnew.TabIndex = 3;
             lbnew.Text = "1.0.0.0";
             // 
-            // lbheader
+            // lblReleaseDate
             // 
-            lbheader.Font = new Font("Constantia", 17.25F, FontStyle.Regular, GraphicsUnit.Point);
-            lbheader.Location = new Point(40, 53);
-            lbheader.Name = "lbheader";
-            lbheader.Size = new Size(290, 65);
-            lbheader.TabIndex = 31;
-            lbheader.Text = "A New Version is Available. Do you want to Update ?";
+            lblReleaseDate.AutoSize = true;
+            lblReleaseDate.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            lblReleaseDate.ForeColor = Color.Gray;
+            lblReleaseDate.Location = new Point(15, 65);
+            lblReleaseDate.Name = "lblReleaseDate";
+            lblReleaseDate.Size = new Size(0, 15);
+            lblReleaseDate.TabIndex = 4;
             // 
-            // bw_updateChecker
+            // pnlProgress
             // 
-            bw_updateChecker.DoWork += backgroundWorker1_DoWork;
-            bw_updateChecker.RunWorkerCompleted += bw_updateChecker_RunWorkerCompleted;
+            pnlProgress.BackColor = Color.White;
+            pnlProgress.Controls.Add(progressBar);
+            pnlProgress.Controls.Add(lblProgressText);
+            pnlProgress.Location = new Point(20, 165);
+            pnlProgress.Name = "pnlProgress";
+            pnlProgress.Padding = new Padding(15);
+            pnlProgress.Size = new Size(440, 70);
+            pnlProgress.TabIndex = 2;
+            pnlProgress.Visible = false;
+            pnlProgress.Paint += pnlProgress_Paint;
+            // 
+            // progressBar
+            // 
+            progressBar.Location = new Point(15, 15);
+            progressBar.Name = "progressBar";
+            progressBar.Size = new Size(410, 25);
+            progressBar.Style = ProgressBarStyle.Continuous;
+            progressBar.TabIndex = 0;
+            // 
+            // lblProgressText
+            // 
+            lblProgressText.AutoSize = true;
+            lblProgressText.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            lblProgressText.ForeColor = Color.Gray;
+            lblProgressText.Location = new Point(15, 45);
+            lblProgressText.Name = "lblProgressText";
+            lblProgressText.Size = new Size(110, 15);
+            lblProgressText.TabIndex = 1;
+            lblProgressText.Text = "Downloading... 0%";
+            // 
+            // pnlButtons
+            // 
+            pnlButtons.Controls.Add(btnUpdate);
+            pnlButtons.Controls.Add(btnCancel);
+            pnlButtons.Dock = DockStyle.Bottom;
+            pnlButtons.Location = new Point(20, 305);
+            pnlButtons.Name = "pnlButtons";
+            pnlButtons.Padding = new Padding(0, 10, 0, 0);
+            pnlButtons.Size = new Size(440, 55);
+            pnlButtons.TabIndex = 3;
+            // 
+            // btnUpdate
+            // 
+            btnUpdate.BackColor = Color.FromArgb(99, 71, 153);
+            btnUpdate.Cursor = Cursors.Hand;
+            btnUpdate.FlatAppearance.BorderSize = 0;
+            btnUpdate.FlatStyle = FlatStyle.Flat;
+            btnUpdate.Font = new Font("Segoe UI Semibold", 11F, FontStyle.Bold, GraphicsUnit.Point);
+            btnUpdate.ForeColor = Color.White;
+            btnUpdate.Location = new Point(0, 10);
+            btnUpdate.Name = "btnUpdate";
+            btnUpdate.Size = new Size(210, 45);
+            btnUpdate.TabIndex = 0;
+            btnUpdate.Text = "Download && Install";
+            btnUpdate.UseVisualStyleBackColor = false;
+            btnUpdate.Visible = false;
+            btnUpdate.Click += btnUpdate_Click;
+            // 
+            // btnCancel
+            // 
+            btnCancel.BackColor = Color.FromArgb(240, 240, 240);
+            btnCancel.Cursor = Cursors.Hand;
+            btnCancel.FlatAppearance.BorderColor = Color.FromArgb(200, 200, 200);
+            btnCancel.FlatAppearance.BorderSize = 1;
+            btnCancel.FlatStyle = FlatStyle.Flat;
+            btnCancel.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            btnCancel.ForeColor = Color.FromArgb(64, 64, 64);
+            btnCancel.Location = new Point(230, 10);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new Size(210, 45);
+            btnCancel.TabIndex = 1;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = false;
+            btnCancel.Click += btnCancel_Click;
+            // 
+            // lblReleaseNotes
+            // 
+            lblReleaseNotes.AutoSize = true;
+            lblReleaseNotes.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            lblReleaseNotes.ForeColor = Color.FromArgb(64, 64, 64);
+            lblReleaseNotes.Location = new Point(20, 170);
+            lblReleaseNotes.Name = "lblReleaseNotes";
+            lblReleaseNotes.Size = new Size(107, 19);
+            lblReleaseNotes.TabIndex = 4;
+            lblReleaseNotes.Text = "Release Notes:";
+            lblReleaseNotes.Visible = false;
+            // 
+            // txtReleaseNotes
+            // 
+            txtReleaseNotes.BackColor = Color.White;
+            txtReleaseNotes.BorderStyle = BorderStyle.FixedSingle;
+            txtReleaseNotes.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            txtReleaseNotes.ForeColor = Color.FromArgb(64, 64, 64);
+            txtReleaseNotes.Location = new Point(20, 195);
+            txtReleaseNotes.Multiline = true;
+            txtReleaseNotes.Name = "txtReleaseNotes";
+            txtReleaseNotes.ReadOnly = true;
+            txtReleaseNotes.ScrollBars = ScrollBars.Vertical;
+            txtReleaseNotes.Size = new Size(440, 100);
+            txtReleaseNotes.TabIndex = 5;
+            txtReleaseNotes.Visible = false;
             // 
             // Updateloader
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(367, 272);
-            Controls.Add(lbheader);
-            Controls.Add(lbnew);
-            Controls.Add(lbcurr);
-            Controls.Add(label2);
-            Controls.Add(btnUpdate);
-            Controls.Add(label7);
-            Controls.Add(plsWait);
-            Controls.Add(label1);
+            BackColor = Color.FromArgb(99, 71, 153);
+            ClientSize = new Size(480, 420);
+            Controls.Add(pnlMain);
             FormBorderStyle = FormBorderStyle.None;
             Name = "Updateloader";
-            StartPosition = FormStartPosition.CenterParent;
-            Text = "Updateloader";
+            Padding = new Padding(0);
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Software Update";
             Load += Updateloader_Load;
+            pnlMain.ResumeLayout(false);
+            pnlHeader.ResumeLayout(false);
+            pnlHeader.PerformLayout();
+            pnlContent.ResumeLayout(false);
+            pnlContent.PerformLayout();
+            pnlVersionInfo.ResumeLayout(false);
+            pnlVersionInfo.PerformLayout();
+            pnlProgress.ResumeLayout(false);
+            pnlProgress.PerformLayout();
+            pnlButtons.ResumeLayout(false);
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private Label label1;
-        private Label plsWait;
-        private Label label7;
-        private Button btnUpdate;
-        private Label label2;
+        private Panel pnlMain;
+        private Panel pnlHeader;
+        private Label lblTitle;
+        private Label btnClose;
+        private Panel pnlContent;
+        private Label lblStatus;
+        private Panel pnlVersionInfo;
+        private Label lblCurrentVersionLabel;
         private Label lbcurr;
+        private Label lblNewVersionLabel;
         private Label lbnew;
-        private Label lbheader;
-        private System.ComponentModel.BackgroundWorker bw_updateChecker;
+        private Label lblReleaseDate;
+        private Panel pnlProgress;
+        private ProgressBar progressBar;
+        private Label lblProgressText;
+        private Panel pnlButtons;
+        private Button btnUpdate;
+        private Button btnCancel;
+        private Label lblReleaseNotes;
+        private TextBox txtReleaseNotes;
     }
 }
