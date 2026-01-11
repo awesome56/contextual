@@ -282,10 +282,6 @@ namespace Contextual
 
         private void frmLogin_Load(object sender, EventArgs e)
         {
-            string versionUrl = "https://asltech.com.ng/download/contextual/info.json"; // File containing latest version info
-            string currentVersion = "1.0.0"; // Current application version
-
-
             Con.Open();
 
             //Add Examiner to program table
