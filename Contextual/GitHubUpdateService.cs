@@ -57,20 +57,29 @@ namespace Contextual
 
             try
             {
+                System.Diagnostics.Debug.WriteLine($"Current application version: {updateInfo.CurrentVersion}");
+
                 // Get the latest release from GitHub
                 var releases = await _client.Repository.Release.GetAll(_owner, _repository);
+                
+                System.Diagnostics.Debug.WriteLine($"Found {releases.Count} releases on GitHub");
+
                 var latestRelease = releases.FirstOrDefault(r => !r.Prerelease && !r.Draft);
 
                 if (latestRelease == null)
                 {
                     // No releases found, try to get any release
                     latestRelease = releases.FirstOrDefault();
+                    System.Diagnostics.Debug.WriteLine("No non-prerelease found, using first available release");
                 }
 
                 if (latestRelease == null)
                 {
+                    System.Diagnostics.Debug.WriteLine("No releases found on GitHub");
                     return updateInfo;
                 }
+
+                System.Diagnostics.Debug.WriteLine($"Latest release tag: {latestRelease.TagName}, Name: {latestRelease.Name}");
 
                 // Clean version string (remove 'v' prefix if present)
                 string latestVersionString = latestRelease.TagName.TrimStart('v', 'V');
@@ -78,6 +87,8 @@ namespace Contextual
                 updateInfo.ReleaseNotes = latestRelease.Body ?? string.Empty;
                 updateInfo.ReleaseName = latestRelease.Name ?? latestVersionString;
                 updateInfo.PublishedAt = latestRelease.PublishedAt?.DateTime ?? DateTime.Now;
+
+                System.Diagnostics.Debug.WriteLine($"Cleaned latest version: {latestVersionString}");
 
                 // Find installer asset (prefer .msi, then .exe, then .zip)
                 var installerAsset = latestRelease.Assets
@@ -92,10 +103,18 @@ namespace Contextual
                     updateInfo.DownloadUrl = installerAsset.BrowserDownloadUrl;
                     updateInfo.AssetName = installerAsset.Name;
                     updateInfo.AssetSize = installerAsset.Size;
+                    System.Diagnostics.Debug.WriteLine($"Found installer asset: {installerAsset.Name}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("No installer asset found in release");
                 }
 
                 // Compare versions
-                updateInfo.IsUpdateAvailable = CompareVersions(updateInfo.CurrentVersion, latestVersionString) < 0;
+                int comparisonResult = CompareVersions(updateInfo.CurrentVersion, latestVersionString);
+                updateInfo.IsUpdateAvailable = comparisonResult < 0;
+
+                System.Diagnostics.Debug.WriteLine($"Version comparison result: {comparisonResult}, Update available: {updateInfo.IsUpdateAvailable}");
 
                 return updateInfo;
             }
@@ -181,10 +200,13 @@ namespace Contextual
                 var current = ParseVersion(currentVersion);
                 var latest = ParseVersion(latestVersion);
 
+                System.Diagnostics.Debug.WriteLine($"Comparing versions - Current: {current}, Latest: {latest}");
+
                 return current.CompareTo(latest);
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Version comparison error: {ex.Message}");
                 // Fallback to string comparison
                 return string.Compare(currentVersion, latestVersion, StringComparison.OrdinalIgnoreCase);
             }
@@ -192,15 +214,31 @@ namespace Contextual
 
         private Version ParseVersion(string versionString)
         {
-            // Remove any non-numeric prefix/suffix
-            var cleanVersion = new string(versionString.Where(c => char.IsDigit(c) || c == '.').ToArray());
-            
-            // Ensure we have at least 2 parts
-            var parts = cleanVersion.Split('.');
-            while (parts.Length < 2)
+            if (string.IsNullOrWhiteSpace(versionString))
             {
-                cleanVersion += ".0";
-                parts = cleanVersion.Split('.');
+                return new Version(0, 0, 0, 0);
+            }
+
+            // Remove any non-numeric prefix/suffix and trim
+            var cleanVersion = new string(versionString.Where(c => char.IsDigit(c) || c == '.').ToArray()).Trim('.');
+            
+            // Handle empty string after cleaning
+            if (string.IsNullOrEmpty(cleanVersion))
+            {
+                return new Version(0, 0, 0, 0);
+            }
+
+            // Split and ensure we have valid parts
+            var parts = cleanVersion.Split('.', StringSplitOptions.RemoveEmptyEntries);
+            
+            // Pad with zeros if needed to have at least 2 parts
+            if (parts.Length < 2)
+            {
+                cleanVersion = parts.Length == 1 ? $"{parts[0]}.0" : "0.0";
+            }
+            else
+            {
+                cleanVersion = string.Join(".", parts);
             }
 
             return Version.Parse(cleanVersion);

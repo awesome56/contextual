@@ -93,7 +93,7 @@ namespace Contextual
                 }
                 else
                 {
-                    ShowUpToDate();
+                    ShowUpToDate(_updateInfo);
                 }
             }
             catch (Exception ex)
@@ -104,13 +104,16 @@ namespace Contextual
 
         private void ShowUpdateAvailable(GitHubUpdateService.UpdateInfo updateInfo)
         {
-            lblStatus.Text = "?? A new version is available!";
+            lblStatus.Text = "A new version is available!";
             lblStatus.ForeColor = Color.FromArgb(99, 71, 153);
 
             // Show version info panel
             pnlVersionInfo.Visible = true;
             lbcurr.Text = updateInfo.CurrentVersion;
             lbnew.Text = updateInfo.LatestVersion;
+
+            // Debug output
+            System.Diagnostics.Debug.WriteLine($"UI Update - Current: {updateInfo.CurrentVersion}, Latest: {updateInfo.LatestVersion}");
 
             if (updateInfo.PublishedAt != default)
             {
@@ -136,17 +139,28 @@ namespace Contextual
             btnCancel.Text = "Not Now";
         }
 
-        private void ShowUpToDate()
+        private void ShowUpToDate(GitHubUpdateService.UpdateInfo updateInfo)
         {
-            lblStatus.Text = "? Your application is up to date!";
+            lblStatus.Text = "Your application is up to date!";
             lblStatus.ForeColor = Color.FromArgb(40, 167, 69);
 
             // Show version info
             pnlVersionInfo.Visible = true;
-            lbcurr.Text = Application.ProductVersion;
-            lbnew.Text = Application.ProductVersion;
+            lbcurr.Text = updateInfo.CurrentVersion;
+            lbnew.Text = !string.IsNullOrEmpty(updateInfo.LatestVersion) ? updateInfo.LatestVersion : updateInfo.CurrentVersion;
             lblNewVersionLabel.Text = "Latest Version:";
-            lblReleaseDate.Text = "";
+            
+            if (updateInfo.PublishedAt != default)
+            {
+                lblReleaseDate.Text = $"Released: {updateInfo.PublishedAt:MMMM dd, yyyy}";
+            }
+            else
+            {
+                lblReleaseDate.Text = "";
+            }
+
+            // Debug output
+            System.Diagnostics.Debug.WriteLine($"Up to date - Current: {updateInfo.CurrentVersion}, Latest: {updateInfo.LatestVersion}");
 
             btnUpdate.Visible = false;
             btnCancel.Text = "Close";
@@ -154,7 +168,7 @@ namespace Contextual
 
         private void ShowError(string message)
         {
-            lblStatus.Text = $"? {message}";
+            lblStatus.Text = $"Error: {message}";
             lblStatus.ForeColor = Color.FromArgb(220, 53, 69);
 
             pnlVersionInfo.Visible = false;
