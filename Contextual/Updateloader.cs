@@ -41,7 +41,7 @@ namespace Contextual
         {
             // Enable double buffering for smoother rendering
             this.DoubleBuffered = true;
-            
+
             // Add shadow effect
             this.Paint += (s, e) => DrawFormShadow(e.Graphics);
         }
@@ -79,7 +79,7 @@ namespace Contextual
             try
             {
                 lblStatus.Text = "Connecting to GitHub...";
-                
+
                 if (_updateService == null)
                 {
                     _updateService = new GitHubUpdateService(GITHUB_OWNER, GITHUB_REPO);
@@ -111,7 +111,7 @@ namespace Contextual
             pnlVersionInfo.Visible = true;
             lbcurr.Text = updateInfo.CurrentVersion;
             lbnew.Text = updateInfo.LatestVersion;
-            
+
             if (updateInfo.PublishedAt != default)
             {
                 lblReleaseDate.Text = $"Released: {updateInfo.PublishedAt:MMMM dd, yyyy}";
@@ -123,7 +123,7 @@ namespace Contextual
                 lblReleaseNotes.Visible = true;
                 txtReleaseNotes.Visible = true;
                 txtReleaseNotes.Text = updateInfo.ReleaseNotes;
-                
+
                 // Adjust layout for release notes
                 lblReleaseNotes.Location = new Point(20, 170);
                 txtReleaseNotes.Location = new Point(20, 195);
@@ -156,7 +156,7 @@ namespace Contextual
         {
             lblStatus.Text = $"? {message}";
             lblStatus.ForeColor = Color.FromArgb(220, 53, 69);
-            
+
             pnlVersionInfo.Visible = false;
             btnUpdate.Visible = false;
             btnCancel.Text = "Close";
@@ -241,10 +241,10 @@ namespace Contextual
         private void UpdateDownloadProgress(DownloadProgressEventArgs e)
         {
             progressBar.Value = Math.Min(e.ProgressPercentage, 100);
-            
+
             string sizeText = FormatBytes(e.BytesReceived);
             string totalText = e.TotalBytesToReceive > 0 ? $" of {FormatBytes(e.TotalBytesToReceive)}" : "";
-            
+
             lblProgressText.Text = $"Downloading... {e.ProgressPercentage}% ({sizeText}{totalText})";
         }
 
@@ -399,7 +399,7 @@ namespace Contextual
             {
                 var rect = new Rectangle(0, 0, panel.Width - 1, panel.Height - 1);
                 int radius = 8;
-                
+
                 using (var path = CreateRoundedRectanglePath(rect, radius))
                 {
                     g.DrawPath(pen, path);
@@ -437,6 +437,11 @@ namespace Contextual
         {
             base.OnFormClosing(e);
             _cancellationTokenSource?.Dispose();
+        }
+
+        private void pnlContent_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
@@ -20,12 +21,19 @@ namespace Contextual
     {
         bool exists = false;
         static string connectionString = string.Format(@"Server=(LocalDB)\MSSQLLocalDB;AttachDbFilename={0};Integrated Security=True;Connect Timeout=30", GlobalVariable.Globals.databasePath);
-        //static string connectionString = string.Format(@"Data Source={0}\(LocalDB)\MSSQLLocalDB;Initial Catalog=concdb.mdf;Integrated Security=True;Connect Timeout=30", Environment.MachineName);
+
+        // For dragging the borderless form
+        private bool dragging = false;
+        private Point dragCursorPoint;
+        private Point dragFormPoint;
 
         public frmLogin()
         {
             InitializeComponent();
-            
+
+            // Apply modern styling
+            ApplyModernStyling();
+
             try
             {
                 SqlHelper helper = new SqlHelper(connectionString);
@@ -34,11 +42,130 @@ namespace Contextual
                     AppSetting setting = new AppSetting();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+        }
+
+        private void ApplyModernStyling()
+        {
+            // Enable double buffering for smooth rendering
+            this.DoubleBuffered = true;
+
+            // Apply rounded corners to the login card
+            pnlLoginCard.Paint += (s, e) =>
+            {
+                using (GraphicsPath path = GetRoundedRect(pnlLoginCard.ClientRectangle, 20))
+                {
+                    pnlLoginCard.Region = new Region(path);
+                }
+            };
+
+            // Apply rounded corners to password container
+            pnlPasswordContainer.Paint += (s, e) =>
+            {
+                using (GraphicsPath path = GetRoundedRect(pnlPasswordContainer.ClientRectangle, 10))
+                {
+                    pnlPasswordContainer.Region = new Region(path);
+                }
+            };
+
+            // Apply rounded corners to buttons
+            button1.Paint += (s, e) =>
+            {
+                using (GraphicsPath path = GetRoundedRect(button1.ClientRectangle, 10))
+                {
+                    button1.Region = new Region(path);
+                }
+            };
+
+            button2.Paint += (s, e) =>
+            {
+                using (GraphicsPath path = GetRoundedRect(button2.ClientRectangle, 10))
+                {
+                    button2.Region = new Region(path);
+                }
+            };
+
+            // Add hover effects to window control buttons
+            label7.MouseEnter += (s, e) => label7.ForeColor = Color.FromArgb(252, 165, 165);
+            label7.MouseLeave += (s, e) => label7.ForeColor = Color.White;
+            label8.MouseEnter += (s, e) => label8.ForeColor = Color.FromArgb(199, 210, 254);
+            label8.MouseLeave += (s, e) => label8.ForeColor = Color.White;
+
+            // Make title bar draggable
+            pnlTitleBar.MouseDown += (s, e) =>
+            {
+                dragging = true;
+                dragCursorPoint = Cursor.Position;
+                dragFormPoint = this.Location;
+            };
+            pnlTitleBar.MouseMove += (s, e) =>
+            {
+                if (dragging)
+                {
+                    Point diff = Point.Subtract(Cursor.Position, new Size(dragCursorPoint));
+                    this.Location = Point.Add(dragFormPoint, new Size(diff));
+                }
+            };
+            pnlTitleBar.MouseUp += (s, e) => dragging = false;
+
+            // Also make the main panel draggable (the purple area)
+            pnlMain.MouseDown += (s, e) =>
+            {
+                dragging = true;
+                dragCursorPoint = Cursor.Position;
+                dragFormPoint = this.Location;
+            };
+            pnlMain.MouseMove += (s, e) =>
+            {
+                if (dragging)
+                {
+                    Point diff = Point.Subtract(Cursor.Position, new Size(dragCursorPoint));
+                    this.Location = Point.Add(dragFormPoint, new Size(diff));
+                }
+            };
+            pnlMain.MouseUp += (s, e) => dragging = false;
+
+            // Focus effect on password field
+            txtPassword.Enter += (s, e) =>
+            {
+                pnlPasswordContainer.BackColor = Color.FromArgb(241, 245, 249);
+                txtPassword.BackColor = Color.FromArgb(241, 245, 249);
+            };
+            txtPassword.Leave += (s, e) =>
+            {
+                pnlPasswordContainer.BackColor = Color.FromArgb(248, 250, 252);
+                txtPassword.BackColor = Color.FromArgb(248, 250, 252);
+            };
+        }
+
+        private GraphicsPath GetRoundedRect(Rectangle bounds, int radius)
+        {
+            int diameter = radius * 2;
+            Size size = new Size(diameter, diameter);
+            Rectangle arc = new Rectangle(bounds.Location, size);
+            GraphicsPath path = new GraphicsPath();
+
+            // Top left arc
+            path.AddArc(arc, 180, 90);
+
+            // Top right arc
+            arc.X = bounds.Right - diameter;
+            path.AddArc(arc, 270, 90);
+
+            // Bottom right arc
+            arc.Y = bounds.Bottom - diameter;
+            path.AddArc(arc, 0, 90);
+
+            // Bottom left arc
+            arc.X = bounds.Left;
+            path.AddArc(arc, 90, 90);
+
+            path.CloseFigure();
+            return path;
         }
 
         SqlConnection Con = new SqlConnection(connectionString);
@@ -50,9 +177,9 @@ namespace Contextual
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
 
-            if(txtPassword.Text == "")
+
+            if (txtPassword.Text == "")
             {
                 MessageBox.Show("Password cannot be empty");
             }
@@ -60,14 +187,14 @@ namespace Contextual
             {
                 Con.Open();
 
-                    bool pass_exist = false;
-                    string chech_pass = "SELECT count(*) FROM [UserTbl] where Pass='" + txtPassword.Text + "'";
-                    SqlCommand cmdPass = new SqlCommand(chech_pass, Con);
-                    pass_exist = (int)cmdPass.ExecuteScalar() > 0;
+                bool pass_exist = false;
+                string chech_pass = "SELECT count(*) FROM [UserTbl] where Pass='" + txtPassword.Text + "'";
+                SqlCommand cmdPass = new SqlCommand(chech_pass, Con);
+                pass_exist = (int)cmdPass.ExecuteScalar() > 0;
 
-                    if (pass_exist)
-                    {
-                        txtPassword.Text = "";
+                if (pass_exist)
+                {
+                    txtPassword.Text = "";
 
                     // If login is successful
                     contextual parentForm = ApplicationInstance.ContextualForm;
@@ -79,13 +206,13 @@ namespace Contextual
 
                     //this.Close(); // Close the login form
                     this.Hide();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Invalid password");
-                    }
+                }
+                else
+                {
+                    MessageBox.Show("Invalid password");
+                }
                 Con.Close();
-                
+
             }
         }
 
@@ -149,16 +276,12 @@ namespace Contextual
             }
             else
             {
-                txtPassword.PasswordChar = '•';
+                txtPassword.PasswordChar = '●';
             }
         }
 
         private void frmLogin_Load(object sender, EventArgs e)
         {
-            string versionUrl = "https://asltech.com.ng/download/contextual/info.json"; // File containing latest version info
-            string currentVersion = "1.0.0"; // Current application version
-
-
             Con.Open();
 
             //Add Examiner to program table
@@ -276,7 +399,7 @@ namespace Contextual
             {
                 // Execute the update query
                 int rowsUpdated = updateSessionStartCommand.ExecuteNonQuery();
-               // MessageBox.Show($"{rowsUpdated} rows updated successfully.");
+                // MessageBox.Show($"{rowsUpdated} rows updated successfully.");
 
                 // Execute the delete query
                 int rowsDeleted = deleteSessionStartCommand.ExecuteNonQuery();
@@ -290,13 +413,13 @@ namespace Contextual
 
             try
             {
-                
+
 
                 string chech = "SELECT count(*) FROM [UserTbl]";
                 SqlCommand cmd = new SqlCommand(chech, Con);
                 exists = (int)cmd.ExecuteScalar() > 0;
 
-                
+
 
                 Con.Close();
             }
@@ -334,6 +457,16 @@ namespace Contextual
                 // Optionally, you can suppress the 'ding' sound
                 e.SuppressKeyPress = true;
             }
+        }
+
+        private void pnlLoginCard_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void lblPasswordIcon_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
